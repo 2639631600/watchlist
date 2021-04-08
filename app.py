@@ -55,9 +55,8 @@ def test_url_for():
 
 @app.route('/')
 def index():
-    user = User.query.first() # 读取用户记录
     movies = Movie.query.all()
-    return render_template('index.html', user=user, movies=movies)
+    return render_template('index.html', movies=movies)
 
 
 @app.cli.command()  # 注册为命令
@@ -68,6 +67,7 @@ def initdb(drop):
         db.drop_all()
     db.create_all()
     click.echo('Initialized database.')  # 输出提示信息
+
 
 @app.cli.command()
 def forge():
@@ -87,11 +87,22 @@ def forge():
         {'title': 'WALL-E', 'year': '2008'},
         {'title': 'The Pork of Music', 'year': '2012'},
     ]
-    user=User(name=name)
+    user = User(name=name)
     db.session.add(user)
     for m in movies:
-        movie = Movie(title=m['title'],year=m['year'])
+        movie = Movie(title=m['title'], year=m['year'])
         db.session.add(movie)
 
     db.session.commit()
     click.echo('Done.')
+
+
+@app.errorhandler(404)  # errorhandler翻译为“错误处理器” 传入要处理的错误代码
+def page_not_found(e):  # e 接受异常对象作为参数
+    return render_template('404.html'), 404  # 返回模板和状态码
+
+
+@app.context_processor
+def inject_user():  # 函数名可以随意修改
+    user = User.query.first()
+    return dict(user=user)  # 需要返回字典，等同于 return {'user': user}
