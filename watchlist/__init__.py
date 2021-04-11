@@ -13,7 +13,7 @@ else:  # 否则使用四个斜线
     prefix = 'sqlite:////'
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'dev'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev')
 # 注意更新这里的路径，把 app.root_path 添加到 os.path.dirname() 中
 # 以便把文件定位到项目根目录
 app.config['SQLALCHEMY_DATABASE_URI'] = prefix + \
