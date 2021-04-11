@@ -1,5 +1,5 @@
 from faker import Faker
-from faker.providers import internet,company
+from faker.providers import internet, company
 fake = Faker('zh_CN')
 fake.add_provider(internet)
 fake.add_provider(company)

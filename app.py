@@ -84,7 +84,7 @@ def login():
         password = request.form['password']
 
         if not username or not password:
-            flash('Invalid input')
+            flash('Invalid input.')
             return redirect(url_for('login'))  # 重定向回登录
 
         user = User.query.first()
