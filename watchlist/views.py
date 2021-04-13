@@ -3,7 +3,8 @@ from flask import render_template, request, url_for, redirect, flash, escape
 from flask_login import login_user, login_required, logout_user, current_user
 
 from watchlist import app, db
-from watchlist.models import User, Movie
+from watchlist.models import User, Movie, Message
+from watchlist.forms import HelloForm
 
 
 @app.route('/hello')
@@ -75,6 +76,9 @@ def settings():
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    form = HelloForm()
+    messages = Message.query.order_by(Message.timestamp.desc()).all()
+
     if request.method == 'POST':  # 判断是否是 POST 请求
         if not current_user.is_authenticated:  # 如果当前用户未认证
             return redirect(url_for('index'))  # 重定向到主页
@@ -92,7 +96,22 @@ def index():
         flash('Item created.项目《{}》已创建'.format(title))  # 显示成功创建的提示
         return redirect(url_for('index'))  # 重定向回主页
     movies = Movie.query.all()
-    return render_template('index.html', movies=movies)
+    return render_template('index.html', movies=movies, form=form, messages=messages)
+
+
+@app.route('/catroom', methods=['GET', 'POST'])
+def catroom():
+    form = HelloForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        body = form.body.data
+        message = Message(body=body, name=name)
+        db.session.add(message)
+        db.session.commit()
+        flash('Your message have been sent to the world!')
+        return redirect(url_for('index'))
+    messages = Message.query.order_by(Message.timestamp.desc()).all()
+    return render_template('index.html', form=form, messages=messages)
 
 
 # 编辑条目

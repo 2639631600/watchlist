@@ -33,6 +33,6 @@
     </li>
     {% endfor %} {# 使用 endfor 标签结束 for 语句 #}
 </ul>
-
+{% include 'catroom.html' %}
 <img class="totoro" alt="Walking Totoro" src="{{ url_for('static', filename='images/totoro.gif') }}" title="to~to~ro~">
 {% endblock content %}
